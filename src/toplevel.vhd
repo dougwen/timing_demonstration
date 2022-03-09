@@ -40,7 +40,8 @@ entity toplevel is
     
     sw : in std_logic_vector(3 downto 0);
     btn : in std_logic_vector(3 downto 0);
-    leds : out std_logic_Vector(3 downto 0)
+    leds : out std_logic_Vector(3 downto 0);
+    clk_in : in std_logic
   );
 end toplevel;
 
@@ -74,12 +75,20 @@ architecture STRUCTURE of toplevel is
     UART_1_0_rxd : in STD_LOGIC
   );
   end component design_1;
+
+component clkdivider is
+    generic (divideby : natural := 2);
+    Port ( clk : in std_logic;
+           reset : in std_logic;
+           pulseout : out std_logic);
+end component;
   
 
   type statetype is (idle,state0,state1,state2,state3);    
   signal cs : statetype; 
   signal clk125_ps : std_logic;
   signal  clk125_pin : std_logic;
+  signal advance_pulse : std_Logic;
   
 begin
 
@@ -120,18 +129,24 @@ design_1_i: component design_1
         elsif rising_edge(clk125_ps) then
             case cs is
                 when idle =>
-                    if btn = "0001" then cs <= state0; end if;
+                    if btn = "0001" or (advance_pulse='1' and sw(1)='1') then cs <= state0; end if;
                 when state0 =>
-                    if btn = "0010" then cs <= state1; end if;
+                    if btn = "0010" or (advance_pulse='1' and sw(1)='1') then cs <= state1; end if;
                  when state1 =>
-                    if btn = "0100" then cs <= state2; end if;
+                    if btn = "0100" or (advance_pulse='1' and sw(1)='1') then cs <= state2; end if;
                  when state2 =>
-                    if btn = "1000" then cs <= state3; end if;
+                    if btn = "1000" or (advance_pulse='1' and sw(1)='1') then cs <= state3; end if;
                  when state3 =>
-                    if btn = "0001" then cs <= state0; end if;
+                    if btn = "0001" or (advance_pulse='1' and sw(1)='1') then cs <= state0; end if;
              end case;
          end if;
     end process fsm;
+
+-- advance 4x per second to speed things along
+makeadvance: clkdivider generic map (divideby => 15000000) 
+    port map (clk => clk125_pin, reset=> '0', pulseout => advance_pulse);
+
+clk125_pin <= clk_in;
 
 leds(0) <= '1' when cs = state0 else '0';
 leds(1) <= '1' when cs = state1 else '0';
