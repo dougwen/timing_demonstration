@@ -1,5 +1,5 @@
 setws ./vitis
-platform create -name hwplat -hw ./lab4_ps7/design_1_wrapper.xsa
+platform create -name hwplat -hw ./vivado/design_1_wrapper.xsa
 domain create -name {standalone_ps7_cortexa9_0} -display-name {standalone_ps7_cortexa9_0} -os {standalone} -proc {ps7_cortexa9_0} -runtime {cpp} -arch {32-bit} -support-app {hello_world}
 platform write
 platform active {hwplat}

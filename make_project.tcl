@@ -7,6 +7,7 @@ set obj [current_project]
  
 add_files -fileset constrs_1 -norecurse ./src/toplevel.xdc
 add_files -fileset sources_1 -norecurse ./src/toplevel.vhd
+add_files -fileset sources_1 -norecurse ./src/clkdivider.vhd
 
 # setup IP repository path and a couple other project options 
 set_property target_language VHDL [current_project]
