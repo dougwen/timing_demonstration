@@ -1,0 +1,6 @@
+the_ROM_image:
+{
+	[bootloader]./vitis/platform/export/platform/sw/boot/fsbl.elf
+	./vitis/my_app/_ide/bitstream/design_1_wrapper.bit
+	./vitis/my_app/build/my_app.elf
+}
